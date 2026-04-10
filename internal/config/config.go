@@ -55,7 +55,7 @@ type RateConfig struct {
 
 func (d DatabaseConfig) DSN() string {
 	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s prepared_statements=false",
 		d.Host, d.Port, d.User, d.Password, d.Name, d.SSLMode,
 	)
 }
