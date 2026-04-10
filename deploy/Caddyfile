@@ -1,0 +1,7 @@
+{$DOMAIN} {
+	reverse_proxy envault-web:3000
+}
+
+api.{$DOMAIN} {
+	reverse_proxy envault-api:8080
+}

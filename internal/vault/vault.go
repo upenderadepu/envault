@@ -9,8 +9,15 @@ import (
 	"github.com/bhartiyaanshul/envault/internal/config"
 	"github.com/hashicorp/vault-client-go"
 	"github.com/hashicorp/vault-client-go/schema"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/rs/zerolog/log"
 )
+
+var vaultOperationsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "envault_vault_operations_total",
+	Help: "Total number of Vault operations.",
+}, []string{"operation", "status"})
 
 type VaultService struct {
 	client      *vault.Client
@@ -150,6 +157,7 @@ func (v *VaultService) CreateUserToken(ctx context.Context, policies []string, t
 		return "", "", fmt.Errorf("failed to create token: %w", err)
 	}
 
+	vaultOperationsTotal.WithLabelValues("create_token", "success").Inc()
 	return resp.Auth.ClientToken, resp.Auth.Accessor, nil
 }
 
@@ -197,6 +205,7 @@ func (v *VaultService) ReadSecret(ctx context.Context, mountPath, secretPath str
 	if resp.Data.Data == nil {
 		return make(map[string]interface{}), nil
 	}
+	vaultOperationsTotal.WithLabelValues("read", "success").Inc()
 	return resp.Data.Data, nil
 }
 
@@ -217,8 +226,10 @@ func (v *VaultService) WriteSecret(ctx context.Context, mountPath, secretPath st
 		Data: existing,
 	}, vault.WithMountPath(mountPath))
 	if err != nil {
+		vaultOperationsTotal.WithLabelValues("write", "error").Inc()
 		return fmt.Errorf("failed to write secret at %s/%s: %w", mountPath, secretPath, err)
 	}
+	vaultOperationsTotal.WithLabelValues("write", "success").Inc()
 	return nil
 }
 
@@ -236,7 +247,9 @@ func (v *VaultService) DeleteSecretKey(ctx context.Context, mountPath, secretPat
 		Data: existing,
 	}, vault.WithMountPath(mountPath))
 	if err != nil {
+		vaultOperationsTotal.WithLabelValues("delete", "error").Inc()
 		return fmt.Errorf("failed to write after deleting key %s: %w", key, err)
 	}
+	vaultOperationsTotal.WithLabelValues("delete", "success").Inc()
 	return nil
 }

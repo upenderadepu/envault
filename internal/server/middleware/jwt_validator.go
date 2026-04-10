@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -29,18 +31,24 @@ type jwkKey struct {
 	Kty string `json:"kty"`
 	Kid string `json:"kid"`
 	Use string `json:"use"`
-	N   string `json:"n"`
-	E   string `json:"e"`
+	Alg string `json:"alg"`
+	Crv string `json:"crv"`
+	// RSA fields
+	N string `json:"n"`
+	E string `json:"e"`
+	// EC fields
+	X string `json:"x"`
+	Y string `json:"y"`
 }
 
 type keyCache struct {
 	mu   sync.RWMutex
-	keys map[string]*rsa.PublicKey
+	keys map[string]interface{} // *rsa.PublicKey or *ecdsa.PublicKey
 }
 
 // JWTValidator validates Supabase JWTs using cached JWKS public keys.
 func JWTValidator(cfg config.AuthConfig) func(http.Handler) http.Handler {
-	cache := &keyCache{keys: make(map[string]*rsa.PublicKey)}
+	cache := &keyCache{keys: make(map[string]interface{})}
 
 	// Skip routes that don't need auth
 	skipPaths := map[string]bool{
@@ -87,10 +95,6 @@ func JWTValidator(cfg config.AuthConfig) func(http.Handler) http.Handler {
 
 			// Parse and validate token
 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-				}
-
 				kid, ok := token.Header["kid"].(string)
 				if !ok {
 					return nil, fmt.Errorf("missing kid in token header")
@@ -103,13 +107,29 @@ func JWTValidator(cfg config.AuthConfig) func(http.Handler) http.Handler {
 				if !exists {
 					return nil, fmt.Errorf("unknown key id: %s", kid)
 				}
+
+				// Validate signing method matches key type
+				switch key.(type) {
+				case *rsa.PublicKey:
+					if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+						return nil, fmt.Errorf("unexpected signing method %v for RSA key", token.Header["alg"])
+					}
+				case *ecdsa.PublicKey:
+					if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+						return nil, fmt.Errorf("unexpected signing method %v for EC key", token.Header["alg"])
+					}
+				default:
+					return nil, fmt.Errorf("unsupported key type")
+				}
+
 				return key, nil
 			},
-				jwt.WithValidMethods([]string{"RS256"}),
+				jwt.WithValidMethods([]string{"RS256", "RS384", "RS512", "ES256", "ES384", "ES512"}),
 				jwt.WithIssuer(cfg.JWTIssuer),
 			)
 
 			if err != nil || !token.Valid {
+				log.Debug().Err(err).Msg("JWT validation failed")
 				respondUnauthorized(w, "invalid token")
 				return
 			}
@@ -169,25 +189,25 @@ func fetchJWKS(url string, cache *keyCache) error {
 		return fmt.Errorf("decode JWKS: %w", err)
 	}
 
-	newKeys := make(map[string]*rsa.PublicKey)
+	newKeys := make(map[string]interface{})
 	for _, key := range jwks.Keys {
-		if key.Kty != "RSA" {
-			continue
-		}
+		switch key.Kty {
+		case "RSA":
+			pubKey, err := parseRSAKey(key)
+			if err != nil {
+				log.Warn().Err(err).Str("kid", key.Kid).Msg("skipping RSA key")
+				continue
+			}
+			newKeys[key.Kid] = pubKey
 
-		nBytes, err := base64.RawURLEncoding.DecodeString(key.N)
-		if err != nil {
-			continue
+		case "EC":
+			pubKey, err := parseECKey(key)
+			if err != nil {
+				log.Warn().Err(err).Str("kid", key.Kid).Msg("skipping EC key")
+				continue
+			}
+			newKeys[key.Kid] = pubKey
 		}
-		eBytes, err := base64.RawURLEncoding.DecodeString(key.E)
-		if err != nil {
-			continue
-		}
-
-		n := new(big.Int).SetBytes(nBytes)
-		e := int(new(big.Int).SetBytes(eBytes).Int64())
-
-		newKeys[key.Kid] = &rsa.PublicKey{N: n, E: e}
 	}
 
 	cache.mu.Lock()
@@ -196,6 +216,51 @@ func fetchJWKS(url string, cache *keyCache) error {
 
 	log.Debug().Int("key_count", len(newKeys)).Msg("JWKS keys loaded")
 	return nil
+}
+
+func parseRSAKey(key jwkKey) (*rsa.PublicKey, error) {
+	nBytes, err := base64.RawURLEncoding.DecodeString(key.N)
+	if err != nil {
+		return nil, fmt.Errorf("decode N: %w", err)
+	}
+	eBytes, err := base64.RawURLEncoding.DecodeString(key.E)
+	if err != nil {
+		return nil, fmt.Errorf("decode E: %w", err)
+	}
+
+	n := new(big.Int).SetBytes(nBytes)
+	e := int(new(big.Int).SetBytes(eBytes).Int64())
+
+	return &rsa.PublicKey{N: n, E: e}, nil
+}
+
+func parseECKey(key jwkKey) (*ecdsa.PublicKey, error) {
+	var curve elliptic.Curve
+	switch key.Crv {
+	case "P-256":
+		curve = elliptic.P256()
+	case "P-384":
+		curve = elliptic.P384()
+	case "P-521":
+		curve = elliptic.P521()
+	default:
+		return nil, fmt.Errorf("unsupported curve: %s", key.Crv)
+	}
+
+	xBytes, err := base64.RawURLEncoding.DecodeString(key.X)
+	if err != nil {
+		return nil, fmt.Errorf("decode X: %w", err)
+	}
+	yBytes, err := base64.RawURLEncoding.DecodeString(key.Y)
+	if err != nil {
+		return nil, fmt.Errorf("decode Y: %w", err)
+	}
+
+	return &ecdsa.PublicKey{
+		Curve: curve,
+		X:     new(big.Int).SetBytes(xBytes),
+		Y:     new(big.Int).SetBytes(yBytes),
+	}, nil
 }
 
 func respondUnauthorized(w http.ResponseWriter, msg string) {
