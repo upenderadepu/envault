@@ -1,0 +1,44 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin/
+/server
+/envault
+
+# Test
+*.test
+*.out
+coverage.html
+
+# Environment
+.env
+*.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.vim
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vendor
+/vendor/
+
+# Build artifacts
+/dist/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Debug
+debug
+*.log

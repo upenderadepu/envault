@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: envault
+      POSTGRES_PASSWORD: envault_dev_password
+      POSTGRES_DB: envault
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U envault -d envault"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  vault:
+    image: hashicorp/vault:1.15
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    volumes:
+      - ./deploy/vault/config.hcl:/vault/config/config.hcl:ro
+      - vaultdata:/vault/data
+    command: vault server -config=/vault/config/config.hcl
+    cap_add:
+      - IPC_LOCK
+    healthcheck:
+      test: ["CMD-SHELL", "vault status -address=http://127.0.0.1:8200 2>&1 | grep -E 'Sealed\\s+false' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Uncomment after Phase 8
+  # envault-api:
+  #   build: .
+  #   ports:
+  #     - "8080:8080"
+  #   env_file: .env
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     vault:
+  #       condition: service_healthy
+
+  # Uncomment after Phase 11
+  # envault-web:
+  #   build: ./web
+  #   ports:
+  #     - "3000:3000"
+  #   env_file: ./web/.env.local
+  #   depends_on:
+  #     envault-api:
+  #       condition: service_healthy
+
+volumes:
+  pgdata:
+  vaultdata:
