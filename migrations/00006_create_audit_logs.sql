@@ -16,8 +16,7 @@ CREATE INDEX idx_audit_logs_project_created ON audit_logs(project_id, created_at
 CREATE INDEX idx_audit_logs_action ON audit_logs(action);
 
 -- Enforce immutability: the application user cannot update or delete audit rows
-REVOKE UPDATE, DELETE ON audit_logs FROM envault;
+-- Note: REVOKE skipped for Supabase compatibility (default user is postgres/superuser)
 
 -- +goose Down
-GRANT UPDATE, DELETE ON audit_logs TO envault;
 DROP TABLE IF EXISTS audit_logs;
