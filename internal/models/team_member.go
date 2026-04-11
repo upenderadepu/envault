@@ -13,7 +13,8 @@ type TeamMember struct {
 	User               *User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	Role               string     `gorm:"not null" json:"role"` // admin, developer, ci
 	VaultPolicyName    string     `json:"vault_policy_name,omitempty"`
-	VaultTokenAccessor string     `json:"-"` // never expose in API responses
+	VaultTokenAccessor string     `json:"-"`                                          // never expose in API responses
+	InviteCode         string     `gorm:"uniqueIndex" json:"-"`                       // short code for invite-by-share
 	IsActive           bool       `gorm:"not null;default:true" json:"is_active"`
 	InvitedAt          time.Time  `gorm:"not null;default:now()" json:"invited_at"`
 	JoinedAt           *time.Time `json:"joined_at,omitempty"`

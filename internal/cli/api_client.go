@@ -14,7 +14,7 @@ type cliClient struct {
 	http    *http.Client
 }
 
-func newCLIClient() *cliClient {
+func newAuthClient() *cliClient {
 	return &cliClient{
 		baseURL: getAPIURL(),
 		token:   getAuthToken(),
@@ -42,7 +42,7 @@ func (c *cliClient) request(method, path string, body interface{}) ([]byte, int,
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("request failed: %w", err)
+		return nil, 0, fmt.Errorf("connection failed: %w", err)
 	}
 	defer resp.Body.Close()
 

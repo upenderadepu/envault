@@ -49,6 +49,26 @@ func (r *TeamMemberRepository) Update(member *models.TeamMember) error {
 	return r.db.Save(member).Error
 }
 
+// FindByAccessor looks up a team member by their Vault token accessor.
+func (r *TeamMemberRepository) FindByAccessor(accessor string) (*models.TeamMember, error) {
+	var member models.TeamMember
+	err := r.db.Preload("User").First(&member, "vault_token_accessor = ? AND is_active = ?", accessor, true).Error
+	if err != nil {
+		return nil, err
+	}
+	return &member, nil
+}
+
+// FindByInviteCode looks up a pending team member by invite code.
+func (r *TeamMemberRepository) FindByInviteCode(code string) (*models.TeamMember, error) {
+	var member models.TeamMember
+	err := r.db.Preload("User").First(&member, "invite_code = ? AND is_active = ?", code, true).Error
+	if err != nil {
+		return nil, err
+	}
+	return &member, nil
+}
+
 // GetAccessorsByProjectID returns all non-empty vault token accessors for a project.
 func (r *TeamMemberRepository) GetAccessorsByProjectID(projectID uuid.UUID) ([]string, error) {
 	var accessors []string

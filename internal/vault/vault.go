@@ -24,6 +24,11 @@ type VaultService struct {
 	mountPrefix string
 }
 
+// Client returns the underlying Vault client for direct API calls.
+func (v *VaultService) Client() *vault.Client {
+	return v.client
+}
+
 func NewVaultService(cfg config.VaultConfig) (*VaultService, error) {
 	client, err := vault.New(
 		vault.WithAddress(cfg.Addr),
@@ -243,12 +248,21 @@ func (v *VaultService) DeleteSecretKey(ctx context.Context, mountPath, secretPat
 
 	delete(existing, key)
 
-	_, err = v.client.Secrets.KvV2Write(ctx, secretPath, schema.KvV2WriteRequest{
-		Data: existing,
-	}, vault.WithMountPath(mountPath))
-	if err != nil {
-		vaultOperationsTotal.WithLabelValues("delete", "error").Inc()
-		return fmt.Errorf("failed to write after deleting key %s: %w", key, err)
+	if len(existing) == 0 {
+		// No keys left — delete the entire secret path
+		_, err = v.client.Secrets.KvV2Delete(ctx, secretPath, vault.WithMountPath(mountPath))
+		if err != nil {
+			vaultOperationsTotal.WithLabelValues("delete", "error").Inc()
+			return fmt.Errorf("failed to delete path after removing last key %s: %w", key, err)
+		}
+	} else {
+		_, err = v.client.Secrets.KvV2Write(ctx, secretPath, schema.KvV2WriteRequest{
+			Data: existing,
+		}, vault.WithMountPath(mountPath))
+		if err != nil {
+			vaultOperationsTotal.WithLabelValues("delete", "error").Inc()
+			return fmt.Errorf("failed to write after deleting key %s: %w", key, err)
+		}
 	}
 	vaultOperationsTotal.WithLabelValues("delete", "success").Inc()
 	return nil

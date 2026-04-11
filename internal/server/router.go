@@ -67,7 +67,11 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 
 	// API v1 routes
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Use(mw.JWTValidator(deps.Config.Auth))
+		jwtMw := mw.JWTValidator(deps.Config.Auth)
+		r.Use(mw.CLIOrJWTAuth(deps.Config.Auth, deps.VaultSvc.Client(), deps.MemberRepo, deps.UserRepo, jwtMw))
+
+		// Accept invite (no RBAC — user just needs to be authenticated)
+		r.Post("/invite/accept", memberHandler.AcceptInvite)
 
 		// Project CRUD (no RBAC — Create and List don't have a slug)
 		r.Post("/projects", projectHandler.Create)

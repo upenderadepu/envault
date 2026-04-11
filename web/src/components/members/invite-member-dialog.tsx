@@ -155,7 +155,7 @@ export function InviteMemberDialog({
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <code className="flex-1 overflow-x-auto rounded-md bg-muted px-3 py-2 font-mono text-sm">
+                <code className="flex-1 rounded-md bg-muted px-3 py-2 font-mono text-xs break-all">
                   {vaultToken}
                 </code>
                 <Button variant="outline" size="icon" onClick={handleCopy}>

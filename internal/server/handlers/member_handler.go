@@ -60,7 +60,7 @@ func (h *MemberHandler) Add(w http.ResponseWriter, r *http.Request) {
 
 	RespondJSON(w, http.StatusCreated, map[string]interface{}{
 		"member":      member,
-		"vault_token": token,
+		"invite_code": token,
 	})
 }
 
@@ -85,6 +85,35 @@ func (h *MemberHandler) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+type AcceptInviteRequest struct {
+	InviteCode string `json:"invite_code" validate:"required"`
+}
+
+func (h *MemberHandler) AcceptInvite(w http.ResponseWriter, r *http.Request) {
+	user := middleware.GetUserFromContext(r.Context())
+	if user == nil {
+		RespondError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	var req AcceptInviteRequest
+	if err := DecodeAndValidate(r, &req); err != nil {
+		RespondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	member, err := h.memberSvc.AcceptInvite(r.Context(), req.InviteCode, user)
+	if err != nil {
+		RespondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	RespondJSON(w, http.StatusOK, map[string]interface{}{
+		"message": "Invite accepted",
+		"member":  member,
+	})
 }
 
 func (h *MemberHandler) Rotate(w http.ResponseWriter, r *http.Request) {

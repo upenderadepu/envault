@@ -11,7 +11,18 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "envault",
 	Short: "Envault — Secure secrets management for teams",
-	Long:  "Envault stores secrets in HashiCorp Vault, provides a CLI to inject them into any environment, and gives teams audited, role-scoped access.",
+	Long:  "Store secrets in HashiCorp Vault, inject them into any environment,\nand give teams audited, role-scoped access.",
+	Run: func(cmd *cobra.Command, args []string) {
+		printLogo()
+		fmt.Println("  Usage:")
+		fmt.Println("    envault login          Sign in to your account")
+		fmt.Println("    envault projects       List all projects")
+		fmt.Println("    envault secrets        List secrets in current project")
+		fmt.Println("    envault run -- <cmd>   Run command with injected secrets")
+		fmt.Println()
+		dim.Println("  Run 'envault <command> --help' for more info.")
+		fmt.Println()
+	},
 }
 
 func Execute() {
@@ -23,59 +34,66 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().String("api-url", "http://localhost:8080", "Envault API server URL")
-	rootCmd.PersistentFlags().String("vault-addr", "", "Vault server address")
-	rootCmd.PersistentFlags().String("vault-token", "", "Vault token for authentication")
+	rootCmd.PersistentFlags().String("api-url", "", "Envault API server URL")
 	rootCmd.PersistentFlags().String("project", "", "Project slug")
+	rootCmd.PersistentFlags().String("env", "development", "Environment (development, staging, production)")
 
 	viper.BindPFlag("api_url", rootCmd.PersistentFlags().Lookup("api-url"))
-	viper.BindPFlag("vault_addr", rootCmd.PersistentFlags().Lookup("vault-addr"))
-	viper.BindPFlag("vault_token", rootCmd.PersistentFlags().Lookup("vault-token"))
 	viper.BindPFlag("project_slug", rootCmd.PersistentFlags().Lookup("project"))
 
-	// Subcommands
+	// Commands
+	rootCmd.AddCommand(loginCmd)
+	rootCmd.AddCommand(signupCmd)
+	rootCmd.AddCommand(logoutCmd)
+	rootCmd.AddCommand(whoamiCmd)
+	rootCmd.AddCommand(projectsCmd)
 	rootCmd.AddCommand(initProjectCmd)
+	rootCmd.AddCommand(secretsCmd)
+	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(membersCmd)
+	rootCmd.AddCommand(joinCmd)
 	rootCmd.AddCommand(envCmd)
-	rootCmd.AddCommand(secretCmd)
-	rootCmd.AddCommand(onboardCmd)
-	rootCmd.AddCommand(rotateCmd)
+	rootCmd.AddCommand(statusCmd)
 }
 
 func initConfig() {
+	// Project-level config (.envault.yaml in current dir)
 	viper.SetConfigName(".envault")
 	viper.SetConfigType("yaml")
-	home, err := os.UserHomeDir()
-	if err == nil {
-		viper.AddConfigPath(home)
-	}
 	viper.AddConfigPath(".")
 
 	viper.SetEnvPrefix("ENVAULT")
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config:", viper.ConfigFileUsed())
-	}
+	viper.ReadInConfig() // ignore error — config file is optional
 }
 
 func getAPIURL() string {
-	return viper.GetString("api_url")
+	url := viper.GetString("api_url")
+	if url == "" {
+		url = os.Getenv("ENVAULT_API_URL")
+	}
+	if url == "" {
+		url = "http://localhost:8080"
+	}
+	return url
 }
 
 func getProjectSlug() string {
 	slug := viper.GetString("project_slug")
 	if slug == "" {
-		fmt.Fprintln(os.Stderr, "Error: project slug is required. Use --project flag or set it in ~/.envault.yaml")
-		os.Exit(1)
+		fatal("No project linked. Run 'envault init <slug>' or use --project flag.")
 	}
 	return slug
 }
 
-func getAuthToken() string {
-	token := viper.GetString("vault_token")
-	if token == "" {
-		fmt.Fprintln(os.Stderr, "Error: auth token is required. Use --vault-token flag or set it in ~/.envault.yaml")
-		os.Exit(1)
+func getEnv(cmd *cobra.Command) string {
+	env, _ := cmd.Flags().GetString("env")
+	if env == "" {
+		env = viper.GetString("environment")
 	}
-	return token
+	if env == "" {
+		env = "development"
+	}
+	return env
 }

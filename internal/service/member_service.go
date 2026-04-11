@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bhartiyaanshul/envault/internal/models"
@@ -70,20 +73,21 @@ func (s *MemberService) AddMember(ctx context.Context, projectSlug, email, role 
 	// Token TTLs: CI gets shorter TTL
 	ttl, maxTTL := tokenTTLForRole(role)
 
-	token, accessor, err := s.vaultSvc.CreateUserToken(ctx, []string{policyName}, ttl, maxTTL)
+	_, accessor, err := s.vaultSvc.CreateUserToken(ctx, []string{policyName}, ttl, maxTTL)
 	if err != nil {
 		return nil, "", fmt.Errorf("create token: %w", err)
 	}
 
-	now := time.Now()
+	inviteCode := generateInviteCode()
+
 	member := &models.TeamMember{
 		ProjectID:          project.ID,
 		UserID:             user.ID,
 		Role:               role,
 		VaultPolicyName:    policyName,
 		VaultTokenAccessor: accessor,
+		InviteCode:         inviteCode,
 		IsActive:           true,
-		JoinedAt:           &now,
 	}
 
 	if err := s.memberRepo.Create(member); err != nil {
@@ -100,7 +104,7 @@ func (s *MemberService) AddMember(ctx context.Context, projectSlug, email, role 
 	})
 
 	member.User = user
-	return member, token, nil
+	return member, inviteCode, nil
 }
 
 // RemoveMember deactivates a member and revokes their Vault token.
@@ -173,6 +177,38 @@ func (s *MemberService) RotateCredentials(ctx context.Context, projectSlug strin
 	})
 
 	return token, nil
+}
+
+// AcceptInvite lets a logged-in user claim an invite code and join the project.
+func (s *MemberService) AcceptInvite(ctx context.Context, inviteCode string, user *models.User) (*models.TeamMember, error) {
+	member, err := s.memberRepo.FindByInviteCode(inviteCode)
+	if err != nil {
+		return nil, fmt.Errorf("invalid or expired invite code")
+	}
+
+	if member.JoinedAt != nil {
+		return nil, fmt.Errorf("invite already accepted")
+	}
+
+	// Link the real user to this membership
+	member.UserID = user.ID
+	now := time.Now()
+	member.JoinedAt = &now
+	member.InviteCode = "" // one-time use
+
+	if err := s.memberRepo.Update(member); err != nil {
+		return nil, fmt.Errorf("accept invite: %w", err)
+	}
+
+	// Update the placeholder user → real user mapping
+	member.User = user
+	return member, nil
+}
+
+func generateInviteCode() string {
+	b := make([]byte, 4)
+	rand.Read(b)
+	return strings.ToUpper(hex.EncodeToString(b))
 }
 
 func environmentsForRole(role string) []string {

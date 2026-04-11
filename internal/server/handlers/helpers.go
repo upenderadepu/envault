@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/rs/zerolog/log"
 )
 
 var validate *validator.Validate
@@ -30,6 +31,9 @@ func RespondJSON(w http.ResponseWriter, status int, data interface{}) {
 }
 
 func RespondError(w http.ResponseWriter, status int, message string) {
+	if status >= 500 {
+		log.Error().Int("status", status).Str("error", message).Msg("server error")
+	}
 	RespondJSON(w, status, map[string]string{"error": message})
 }
 

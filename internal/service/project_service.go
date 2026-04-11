@@ -61,6 +61,17 @@ func generateSlug(name string) string {
 // Returns the project and a one-time Vault token for the owner.
 func (s *ProjectService) CreateProject(ctx context.Context, name string, ownerID uuid.UUID) (*models.Project, string, error) {
 	slug := generateSlug(name)
+
+	// Ensure slug is unique — append short random suffix on conflict
+	baseSlug := slug
+	for i := 0; i < 5; i++ {
+		if _, err := s.projectRepo.FindBySlug(slug); err != nil {
+			break // slug is available
+		}
+		suffix := uuid.New().String()[:6]
+		slug = fmt.Sprintf("%s-%s", baseSlug, suffix)
+	}
+
 	mountPath := fmt.Sprintf("%s-%s", s.mountPrefix, slug)
 
 	project := &models.Project{

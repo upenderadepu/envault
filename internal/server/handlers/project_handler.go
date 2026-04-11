@@ -36,7 +36,7 @@ func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.userRepo.FindOrCreate(jwtUser.SupabaseUID, jwtUser.Email)
 	if err != nil {
-		RespondError(w, http.StatusInternalServerError, "user lookup failed")
+		RespondError(w, http.StatusInternalServerError, "user lookup failed: "+err.Error())
 		return
 	}
 
@@ -61,7 +61,7 @@ func (h *ProjectHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.userRepo.FindOrCreate(jwtUser.SupabaseUID, jwtUser.Email)
 	if err != nil {
-		RespondError(w, http.StatusInternalServerError, "user lookup failed")
+		RespondError(w, http.StatusInternalServerError, "user lookup failed: "+err.Error())
 		return
 	}
 
