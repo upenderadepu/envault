@@ -7,6 +7,10 @@
 [![Vault](https://img.shields.io/badge/Vault-1.15-FFEC6E?style=flat&logo=vault)](https://www.vaultproject.io)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+<p align="center">
+  <img src="docs/cli-preview.svg" alt="Envault CLI preview" width="720" />
+</p>
+
 ---
 
 ## What is Envault?

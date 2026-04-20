@@ -45,3 +45,4 @@ debug
 
 # Claude Code
 .claude/
+.envault.yaml
