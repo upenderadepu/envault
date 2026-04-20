@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="13">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="winShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="580" fill="#f1f5f9"/>
+
+  <!-- Window frame -->
+  <g filter="url(#winShadow)">
+    <rect x="40" y="30" width="880" height="520" rx="12" fill="#ffffff"/>
+  </g>
+
+  <!-- Browser chrome -->
+  <rect x="40" y="30" width="880" height="42" rx="12" fill="url(#headerGrad)"/>
+  <rect x="40" y="60" width="880" height="12" fill="url(#headerGrad)"/>
+  <circle cx="62" cy="51" r="6" fill="#ff5f57"/>
+  <circle cx="82" cy="51" r="6" fill="#febc2e"/>
+  <circle cx="102" cy="51" r="6" fill="#28c840"/>
+  <rect x="300" y="40" width="360" height="22" rx="11" fill="#e2e8f0"/>
+  <text x="480" y="55" text-anchor="middle" font-size="11" fill="#64748b">envault.yourdomain.com/dashboard/projects/my-app</text>
+
+  <!-- Sidebar -->
+  <rect x="40" y="72" width="200" height="478" fill="#fafbfc"/>
+  <line x1="240" y1="72" x2="240" y2="550" stroke="#e2e8f0"/>
+
+  <!-- Logo -->
+  <rect x="62" y="92" width="26" height="26" rx="6" fill="#0ea5e9"/>
+  <text x="75" y="110" text-anchor="middle" font-size="14" fill="#ffffff">🛡</text>
+  <text x="98" y="111" font-size="15" font-weight="700" fill="#0f172a">Envault</text>
+
+  <!-- Project selector -->
+  <rect x="60" y="140" width="160" height="36" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="74" y="162" font-size="12" font-weight="600" fill="#0f172a">my-app</text>
+  <text x="200" y="162" font-size="12" fill="#94a3b8" text-anchor="end">▾</text>
+
+  <!-- Nav items -->
+  <rect x="60" y="196" width="160" height="32" rx="6" fill="#e0f2fe"/>
+  <text x="74" y="216" font-size="13" font-weight="600" fill="#0369a1">🔑 Secrets</text>
+  <text x="74" y="250" font-size="13" fill="#64748b">👥 Members</text>
+  <text x="74" y="282" font-size="13" fill="#64748b">📋 Audit Logs</text>
+  <text x="74" y="314" font-size="13" fill="#64748b">⚙ Settings</text>
+
+  <!-- Main header -->
+  <text x="270" y="114" font-size="22" font-weight="700" fill="#0f172a">Secrets</text>
+  <text x="270" y="134" font-size="12" fill="#64748b">Manage environment variables for my-app</text>
+
+  <!-- Env tabs -->
+  <rect x="270" y="155" width="380" height="36" rx="8" fill="#f1f5f9"/>
+  <rect x="274" y="159" width="124" height="28" rx="6" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="336" y="178" text-anchor="middle" font-size="12" font-weight="600" fill="#0f172a">Development</text>
+  <text x="460" y="178" text-anchor="middle" font-size="12" fill="#64748b">Staging</text>
+  <text x="590" y="178" text-anchor="middle" font-size="12" fill="#64748b">Production</text>
+
+  <!-- Action buttons -->
+  <rect x="760" y="155" width="60" height="36" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="790" y="178" text-anchor="middle" font-size="12" fill="#0f172a">Import</text>
+  <rect x="828" y="155" width="70" height="36" rx="8" fill="#0ea5e9"/>
+  <text x="863" y="178" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">+ New</text>
+
+  <!-- Table header -->
+  <rect x="270" y="210" width="630" height="40" rx="8" fill="#f8fafc"/>
+  <text x="285" y="234" font-size="11" font-weight="600" fill="#64748b">KEY</text>
+  <text x="540" y="234" font-size="11" font-weight="600" fill="#64748b">VALUE</text>
+  <text x="760" y="234" font-size="11" font-weight="600" fill="#64748b">VERSION</text>
+  <text x="840" y="234" font-size="11" font-weight="600" fill="#64748b">MODIFIED</text>
+
+  <!-- Rows -->
+  <g font-size="12" fill="#0f172a">
+    <!-- Row 1 -->
+    <line x1="270" y1="260" x2="900" y2="260" stroke="#e2e8f0"/>
+    <text x="285" y="285" font-family="'SF Mono', monospace" font-weight="600">DATABASE_URL</text>
+    <text x="540" y="285" font-family="'SF Mono', monospace" fill="#64748b">•••••••••••••••••••</text>
+    <rect x="760" y="272" width="28" height="20" rx="4" fill="#dbeafe"/>
+    <text x="774" y="286" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">v3</text>
+    <text x="840" y="285" fill="#64748b">2d ago</text>
+
+    <!-- Row 2 -->
+    <line x1="270" y1="310" x2="900" y2="310" stroke="#e2e8f0"/>
+    <text x="285" y="335" font-family="'SF Mono', monospace" font-weight="600">STRIPE_SECRET_KEY</text>
+    <text x="540" y="335" font-family="'SF Mono', monospace" fill="#64748b">•••••••••••••••••••</text>
+    <rect x="760" y="322" width="28" height="20" rx="4" fill="#dbeafe"/>
+    <text x="774" y="336" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">v1</text>
+    <text x="840" y="335" fill="#64748b">5d ago</text>
+
+    <!-- Row 3 -->
+    <line x1="270" y1="360" x2="900" y2="360" stroke="#e2e8f0"/>
+    <text x="285" y="385" font-family="'SF Mono', monospace" font-weight="600">JWT_SIGNING_KEY</text>
+    <text x="540" y="385" font-family="'SF Mono', monospace" fill="#64748b">•••••••••••••••••••</text>
+    <rect x="760" y="372" width="28" height="20" rx="4" fill="#dbeafe"/>
+    <text x="774" y="386" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">v2</text>
+    <text x="840" y="385" fill="#64748b">1w ago</text>
+
+    <!-- Row 4 -->
+    <line x1="270" y1="410" x2="900" y2="410" stroke="#e2e8f0"/>
+    <text x="285" y="435" font-family="'SF Mono', monospace" font-weight="600">REDIS_URL</text>
+    <text x="540" y="435" font-family="'SF Mono', monospace" fill="#0f172a">redis://localhost:6379</text>
+    <rect x="760" y="422" width="28" height="20" rx="4" fill="#dbeafe"/>
+    <text x="774" y="436" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">v1</text>
+    <text x="840" y="435" fill="#64748b">2w ago</text>
+
+    <!-- Row 5 -->
+    <line x1="270" y1="460" x2="900" y2="460" stroke="#e2e8f0"/>
+    <text x="285" y="485" font-family="'SF Mono', monospace" font-weight="600">AWS_ACCESS_KEY_ID</text>
+    <text x="540" y="485" font-family="'SF Mono', monospace" fill="#64748b">•••••••••••••••••••</text>
+    <rect x="760" y="472" width="28" height="20" rx="4" fill="#dbeafe"/>
+    <text x="774" y="486" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">v1</text>
+    <text x="840" y="485" fill="#64748b">3w ago</text>
+  </g>
+
+  <!-- Footer info -->
+  <text x="270" y="528" font-size="11" fill="#94a3b8">5 secrets in development · Stored securely in HashiCorp Vault</text>
+</svg>

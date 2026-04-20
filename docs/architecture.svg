@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="13">
+  <defs>
+    <linearGradient id="bgCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="bgPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="bgVault" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="bgDB" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="460" fill="#f1f5f9"/>
+
+  <!-- Title -->
+  <text x="450" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Envault Architecture</text>
+  <text x="450" y="56" text-anchor="middle" font-size="12" fill="#64748b">Secret values live only in Vault — never in the database</text>
+
+  <!-- Clients row -->
+  <g filter="url(#cardShadow)">
+    <rect x="90" y="90" width="200" height="90" rx="12" fill="url(#bgCard)" stroke="#e2e8f0"/>
+    <text x="190" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">Web Dashboard</text>
+    <text x="190" y="140" text-anchor="middle" fill="#64748b">Next.js 14 + React</text>
+    <text x="190" y="160" text-anchor="middle" fill="#64748b">Supabase Auth</text>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="610" y="90" width="200" height="90" rx="12" fill="url(#bgCard)" stroke="#e2e8f0"/>
+    <text x="710" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">CLI (envault)</text>
+    <text x="710" y="140" text-anchor="middle" fill="#64748b">Go + Cobra</text>
+    <text x="710" y="160" text-anchor="middle" fill="#64748b">Invite codes, run cmd</text>
+  </g>
+
+  <!-- API in middle -->
+  <g filter="url(#cardShadow)">
+    <rect x="325" y="220" width="250" height="90" rx="12" fill="url(#bgPrimary)"/>
+    <text x="450" y="248" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Go API Server</text>
+    <text x="450" y="268" text-anchor="middle" fill="#e0f2fe">Chi Router · JWT · RBAC</text>
+    <text x="450" y="286" text-anchor="middle" fill="#e0f2fe">Rate limiting · Audit logs</text>
+  </g>
+
+  <!-- Arrows top -> API -->
+  <path d="M190,180 Q190,200 320,225" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M710,180 Q710,200 580,225" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="240" y="210" fill="#64748b" font-size="11">HTTPS</text>
+  <text x="620" y="210" fill="#64748b" font-size="11">HTTPS</text>
+
+  <!-- Data layer -->
+  <g filter="url(#cardShadow)">
+    <rect x="150" y="340" width="240" height="90" rx="12" fill="url(#bgDB)"/>
+    <text x="270" y="368" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">PostgreSQL</text>
+    <text x="270" y="388" text-anchor="middle" fill="#ede9fe">Users · Projects · Members</text>
+    <text x="270" y="406" text-anchor="middle" fill="#ede9fe">Metadata &amp; Audit Logs only</text>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="510" y="340" width="240" height="90" rx="12" fill="url(#bgVault)"/>
+    <text x="630" y="368" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">HashiCorp Vault</text>
+    <text x="630" y="388" text-anchor="middle" fill="#d1fae5">KV-v2 engine</text>
+    <text x="630" y="406" text-anchor="middle" fill="#d1fae5">🔒 All secret values (AES-256)</text>
+  </g>
+
+  <!-- Arrows API -> Data -->
+  <path d="M400,310 Q400,325 290,340" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M500,310 Q500,325 610,340" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="320" y="333" fill="#64748b" font-size="11">metadata</text>
+  <text x="540" y="333" fill="#64748b" font-size="11">secrets</text>
+</svg>

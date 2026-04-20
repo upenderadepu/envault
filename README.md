@@ -23,6 +23,10 @@ Teams share secrets through Slack DMs, `.env` files in repos, or sticky notes. E
 - Manage secrets from a **web dashboard** or a **powerful CLI**
 - One command to inject secrets into any process: `envault run -- npm start`
 
+<p align="center">
+  <img src="docs/dashboard-preview.svg" alt="Envault dashboard preview" width="880" />
+</p>
+
 ---
 
 ## Get Started (5 minutes)
@@ -101,6 +105,10 @@ export ENVAULT_SUPABASE_ANON_KEY=your-anon-key-here
 envault signup
 envault login
 ```
+
+<p align="center">
+  <img src="docs/workflow.svg" alt="Envault workflow" width="900" />
+</p>
 
 ### Create a project
 
@@ -226,16 +234,11 @@ envault join <code>      # Accept an invite code
 
 ## Architecture
 
-```
-                    Dashboard (Next.js)
-                         |
-  CLI (envault) -----> Go API Server <-----> HashiCorp Vault
-                         |                   (secret values)
-                    PostgreSQL
-                    (users, projects, audit logs)
-```
+<p align="center">
+  <img src="docs/architecture.svg" alt="Envault architecture" width="880" />
+</p>
 
-**Key design decision:** Secret values are stored **only** in Vault. PostgreSQL stores metadata (who created what, team memberships, audit logs). This means even a full database leak exposes zero secrets.
+**Key design decision:** Secret values are stored **only** in Vault. PostgreSQL stores metadata (who created what, team memberships, audit logs). Even a full database leak exposes zero secrets.
 
 ---
 

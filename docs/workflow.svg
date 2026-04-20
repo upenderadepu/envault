@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 260" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="13">
+  <defs>
+    <filter id="shadow2" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.1"/>
+    </filter>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0ea5e9"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="260" fill="#ffffff"/>
+
+  <text x="480" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Typical Workflow</text>
+  <text x="480" y="52" text-anchor="middle" font-size="12" fill="#64748b">From zero to running your app with secrets in under 2 minutes</text>
+
+  <!-- Steps -->
+  <g transform="translate(40,90)">
+    <g filter="url(#shadow2)">
+      <rect width="160" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    </g>
+    <circle cx="30" cy="30" r="16" fill="#0ea5e9"/>
+    <text x="30" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">1</text>
+    <text x="80" y="34" font-size="13" font-weight="700" fill="#0f172a">Login</text>
+    <text x="14" y="72" font-family="'SF Mono', monospace" font-size="11" fill="#0ea5e9">envault login</text>
+    <text x="14" y="96" font-size="11" fill="#64748b">Sign in with your</text>
+    <text x="14" y="112" font-size="11" fill="#64748b">Supabase account</text>
+  </g>
+
+  <path d="M210,155 L230,155" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow2)"/>
+
+  <g transform="translate(240,90)">
+    <g filter="url(#shadow2)">
+      <rect width="160" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    </g>
+    <circle cx="30" cy="30" r="16" fill="#0ea5e9"/>
+    <text x="30" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">2</text>
+    <text x="80" y="34" font-size="13" font-weight="700" fill="#0f172a">Create</text>
+    <text x="14" y="72" font-family="'SF Mono', monospace" font-size="11" fill="#0ea5e9">envault projects</text>
+    <text x="14" y="86" font-family="'SF Mono', monospace" font-size="11" fill="#0ea5e9">  create my-app</text>
+    <text x="14" y="108" font-size="11" fill="#64748b">Creates project</text>
+  </g>
+
+  <path d="M410,155 L430,155" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow2)"/>
+
+  <g transform="translate(440,90)">
+    <g filter="url(#shadow2)">
+      <rect width="160" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    </g>
+    <circle cx="30" cy="30" r="16" fill="#0ea5e9"/>
+    <text x="30" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">3</text>
+    <text x="80" y="34" font-size="13" font-weight="700" fill="#0f172a">Link</text>
+    <text x="14" y="72" font-family="'SF Mono', monospace" font-size="11" fill="#0ea5e9">envault init my-app</text>
+    <text x="14" y="96" font-size="11" fill="#64748b">Links your folder</text>
+    <text x="14" y="112" font-size="11" fill="#64748b">to the project</text>
+  </g>
+
+  <path d="M610,155 L630,155" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrow2)"/>
+
+  <g transform="translate(640,90)">
+    <g filter="url(#shadow2)">
+      <rect width="160" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    </g>
+    <circle cx="30" cy="30" r="16" fill="#0ea5e9"/>
+    <text x="30" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">4</text>
+    <text x="80" y="34" font-size="13" font-weight="700" fill="#0f172a">Add secrets</text>
+    <text x="14" y="72" font-family="'SF Mono', monospace" font-size="11" fill="#0ea5e9">envault secrets set</text>
+    <text x="14" y="86" font-family="'SF Mono', monospace" font-size="11" fill="#0ea5e9">  API_KEY=xxx</text>
+    <text x="14" y="108" font-size="11" fill="#64748b">Stored in Vault</text>
+  </g>
+
+  <path d="M810,155 L830,155" stroke="#10b981" stroke-width="2" marker-end="url(#arrow2)"/>
+
+  <g transform="translate(840,90)">
+    <g filter="url(#shadow2)">
+      <rect width="80" height="130" rx="12" fill="#10b981"/>
+    </g>
+    <text x="40" y="55" text-anchor="middle" font-size="22" fill="#ffffff">🚀</text>
+    <text x="40" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">Run app</text>
+    <text x="40" y="103" text-anchor="middle" font-family="'SF Mono', monospace" font-size="9" fill="#d1fae5">envault run</text>
+    <text x="40" y="115" text-anchor="middle" font-family="'SF Mono', monospace" font-size="9" fill="#d1fae5">-- npm start</text>
+  </g>
+</svg>
